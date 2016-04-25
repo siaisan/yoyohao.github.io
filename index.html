@@ -1,14 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>My first page</title>
-  <link href="styles/style.css" rel="stylesheet" type="text/css">
+	<meta charset="UTF-8">
+	<title>字幕弹窗</title>
+	<style type="text/css">
+		*{padding: 0;margin: 0;}
+		html,body{height: 100%;font-size: 16px;}
+		.main{height: 100%;background: #000;position: relative;overflow: hidden;color: #fff;}
+		.main span {position: absolute;left: 100%;width: 100%;}
+		.submit{position: absolute;left: 0;bottom: 0;background: blue;text-align: center;width: 100%;line-height: 6rem;}
+		input{display: inline-block;width: 80%;line-height: 4rem;}
+		button{display: inline-block;width: 15%;line-height: 4rem;background: red;}
+	</style>
 </head>
 <body>
-  <p>This is a single paragraph</p>
-  <img src="images/my_icon.png" alt="my first image">
-  <p><a href="https://www.mozilla.org/en-US/about/manifesto/">Mozilla Manifesto</a></p>
-  <script src="scripts/main.js"></script>
+	<section class="main"></section>
+	<section class="submit">
+		<input type="text" placeholder="输入您的字幕" /><button>发送</button>
+	</section>
+	<script type="text/javascript">
+	function ZiMu(mainContent , submitButton , inputText){
+		var flag = true;
+		var clientHeight = document.body.clientHeight;
+		mainContent.style.height = clientHeight + "px";
+		window.onresize = function () {
+			mainContent.style.height = document.body.clientHeight  - 6 * 16 +'px';
+		};
+		document.onkeydown = function( event) {
+			var event = window.event || event;
+			if ( event.keyCode === 13  ) {
+				randomText();
+			}
+		};
+		submitButton.onclick = function() {
+			randomText();
+
+		};
+		function randomText() {
+			if (flag === true ) {
+				var text = inputText.value;
+				var length = text.length;
+				var p = document.createElement('span');
+				p.style.color = randomColor();
+				var random = randomFontSize(1,4);
+				p.style.fontSize= random + 'rem';
+				var randomHeight = randomFontSize(0,(document.body.clientHeight - 10 * 16));
+				p.style.marginTop = randomHeight + 'px';
+				p.innerText = text;
+				mainContent.appendChild(p);
+				var i = 1;
+				var timer = setInterval(function() {
+					p.style.left = i* document.body.clientWidth + 'px';
+					i -= 0.004;
+					if ( p.offsetLeft < -length * random * 16 ) {
+						clearInterval(timer);
+						mainContent.removeChild(p);
+					}
+				},50);
+				inputText.value = '';
+					flag = false;
+			} else {
+				alert('2秒内仅能提交一次哦！');
+			}
+			setTimeout(function() {
+				flag = true;
+			}, 2000);
+		}
+		function randomColor () {
+    		return '#'+('00000'+(Math.random()*0x1000000<<0).toString(16)).slice(-6);
+		}
+		function randomFontSize (min , max) {
+    		return (min+Math.random()*(max-min)).toFixed(2);
+		}
+	}
+	var mainContent = document.querySelector('.main');
+	var submitButton = document.querySelector('button');
+	var inputText = document.querySelector('input');
+	var zimu = new ZiMu(mainContent,submitButton,inputText);
+	</script>
 </body>
 </html>
